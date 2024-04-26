@@ -1,0 +1,49 @@
+.container {
+    max-width: 400px;
+    background-color: white;
+    margin: 0 auto;
+    border-radius: 5px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.inputBox {
+    display: flex;
+    margin: 20px;
+    gap: 10px;
+    height: 35px;
+}
+
+.buttonBox {
+    background-color:#1E90FF;
+    border-radius: 3px;
+    border: #1E90FF;
+    color: white;
+    cursor: pointer;
+}
+
+.inputBox input {
+    flex: 1;
+    font-size: 18px;
+    padding: 5px;
+    
+}
+
+.content {
+    padding: 20px;
+}
+.list-box {
+    width: 200;
+    margin-top: 10;
+    display: flex;
+    list-style: none;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.list-item {
+    display: flex;
+}
