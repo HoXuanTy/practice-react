@@ -1,9 +1,10 @@
 
-interface TaskList {
-    id?: number;
+export interface Task {
+    id: number;
     name: string;
     isDone: boolean;
 }
 
-
-export default TaskList
+export interface TaskList {
+    tasks: Task[];
+}

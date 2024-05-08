@@ -22,14 +22,37 @@ h1 {
     border: #1E90FF;
     color: white;
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.optionBox {
+    margin: 0 20px;
+}
+
+.inputBox div {
+    flex: 1;
+    margin-right: 20px;
 }
 
 .inputBox input {
-    flex: 1;
+    width: 100%;
     font-size: 18px;
     padding: 5px;
+    outline: none;
     
 }
+
+.textInput:focus {
+    border: 2px solid #1E90FF;
+    border-radius: 3px;
+}
+
+.errorInput:focus {
+    border: 2px solid red;
+    border-radius: 3px;
+}
+
 
 .content {
     padding: 20px;
@@ -46,4 +69,9 @@ h1 {
 
 .list-item {
     display: flex;
+}
+
+.validate {
+    color: red;
+    font-size: 13px;
 }
