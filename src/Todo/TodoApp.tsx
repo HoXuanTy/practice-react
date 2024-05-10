@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import "./Todo.css";
 import {
   getTaskApi,
@@ -6,10 +6,10 @@ import {
   deleteTask,
   checkTask,
   checkAllTasks,
-  searchTask,
 } from "./TodoApi";
 import { Task } from "./Todo";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import useDebounceState from "../hooks/useDebounceState";
 
 function TodoApp() {
   const [task, setTask] = useState("");
@@ -18,42 +18,27 @@ function TodoApp() {
   const [validateInput, setValidateInput] = useState<string>("");
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const timeRef = useRef<number>(0);
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isCheckAll, setIsCheckAll] = useState<boolean>(false);
+  const initialTasks = useRef<Task[]>([]);
 
-  const [search, setSearch] = useState<Task[]>([]);
+  const [debounce, setDebounce] = useDebounceState("");
+
 
   const getData = async () => {
     const dataApi = await getTaskApi();
     setData(dataApi);
-    setSearch(dataApi);
-    setLoading(false);
+    initialTasks.current = dataApi;
+    setIsLoading(false);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-
-    if (timeRef.current) {
-      clearTimeout(timeRef.current);
-    }
-
-    try {
-      timeRef.current = setTimeout(async () => {
-        if (value.trim()) {
-          const searchData = await searchTask(value);
-          setData(searchData);
-        } else {
-          setData(search);
-        }
-        console.log("search debounce");
-      }, 1000);
-    } catch (error) {
-      console.log(error);
-    }
-
     setTask(value);
+
+    // search by debounce
+    setDebounce(value)
   };
 
   const handleAddItem = async () => {
@@ -120,7 +105,15 @@ function TodoApp() {
     if (task) {
       setValidateInput("");
     }
-  }, [task]);
+
+    if (task.trim()) {
+      setData(debounce);
+    } else {
+      setData(initialTasks.current);
+    }
+  }, [task, debounce]);
+
+  
 
   return (
     <div className="container">
@@ -145,50 +138,44 @@ function TodoApp() {
         </section>
 
         <section className="optionBox">
-          {data?.length > 0 && (
+          {data.length > 0 && (
             <input type="checkbox" onChange={handleCheckAll} />
           )}
         </section>
       </header>
       <main>
         <section className="content">
-          {!loading ? (
-            data?.length ? (
-              data.map((item) => (
-                <div key={item.id} className="list-box">
-                  <div className="list-item">
-                    <input
-                      style={{ cursor: "pointer" }}
-                      type="checkbox"
-                      checked={item.isDone}
-                      onChange={(e) =>
-                        handleCheckItem(item.id, e.target.checked)
-                      }
-                    />
-                    <li
-                      style={{
-                        textDecorationLine: item.isDone
-                          ? "line-through"
-                          : "none",
-                        marginLeft: 10,
-                      }}
-                    >
-                      {item.name}
-                    </li>
-                  </div>
-                  <div
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleDeleteItem(item.id)}
-                  >
-                    <FaRegTrashAlt size={20} color="red" />
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p style={{ textAlign: "center" }}>No data</p>
-            )
-          ) : (
+          {isLoading ? (
             <p>Loading...</p>
+          ) : data.length ? (
+            data.map((item) => (
+              <div key={item.id} className="list-box">
+                <div className="list-item">
+                  <input
+                    style={{ cursor: "pointer" }}
+                    type="checkbox"
+                    checked={item.isDone}
+                    onChange={(e) => handleCheckItem(item.id, e.target.checked)}
+                  />
+                  <li
+                    style={{
+                      textDecorationLine: item.isDone ? "line-through" : "none",
+                      marginLeft: 10,
+                    }}
+                  >
+                    {item.name}
+                  </li>
+                </div>
+                <div
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleDeleteItem(item.id)}
+                >
+                  <FaRegTrashAlt size={20} color="red" />
+                </div>
+              </div>
+            ))
+          ) : (
+            <p style={{ textAlign: "center" }}>No data</p>
           )}
         </section>
       </main>

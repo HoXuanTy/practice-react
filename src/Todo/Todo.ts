@@ -4,7 +4,3 @@ export interface Task {
     name: string;
     isDone: boolean;
 }
-
-export interface TaskList {
-    tasks: Task[];
-}

@@ -1,14 +1,15 @@
 const URL_API = "https://63aa9cf2fdc006ba6046fb58.mockapi.io/task"
-import { Task, TaskList } from "./Todo";
+import { Task } from "./Todo";
 
 
-async function getTaskApi() {
+async function getTaskApi(): Promise<Task[]> {
   try {
     const response = await fetch(URL_API);
-    const dataApi = await response.json();
+    const dataApi: Task[] = await response.json();
     return dataApi
   } catch (error) {
     console.log("Fetch error", error);
+    return []
   }
 }
 
@@ -74,17 +75,19 @@ async function checkAllTasks(params: Task[]) {
 }
 
 
-async function searchTask(params: string) {
+async function searchTask(params: string): Promise<Task[]> {
   try {
     const response = await fetch(`${URL_API}?name=${params}`)
     if (response.ok) {
-      const dataApi = await response.json()
+      const dataApi: Task[] = await response.json()
       return dataApi
     } else {
       console.log('search error', response.status);
+      return []
     }
   } catch (error) {
     console.log('search error', error);
+    return []
   }
 }
 
